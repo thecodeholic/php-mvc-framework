@@ -6,6 +6,7 @@
  */
 
 
+use app\controllers\AboutController;
 use app\controllers\SiteController;
 use app\core\Application;
 
@@ -15,5 +16,6 @@ $app = new Application(dirname(__DIR__));
 $app->router->get('/', [SiteController::class, 'home']);
 $app->router->get('/login', [SiteController::class, 'login']);
 $app->router->get('/contact', [SiteController::class, 'contact']);
+$app->router->get('/about', [AboutController::class, 'index']);
 
 $app->run();
