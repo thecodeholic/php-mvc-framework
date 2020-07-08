@@ -1,6 +1,20 @@
 <h1>Contact page</h1>
 
 <form>
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <label>First name</label>
+                <input type="text" class="form-control" name="lastname">
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label>Last name</label>
+                <input type="text" class="form-control" name="lastname">
+            </div>
+        </div>
+    </div>
     <div class="form-group">
         <label>Email address</label>
         <input type="email" class="form-control" name="email">
