@@ -62,6 +62,9 @@ class Router
 
     public function renderViewOnly($view, $params = [])
     {
+        foreach ($params as $key => $value) {
+            $$key = $value;
+        }
         ob_start();
         include_once Application::$ROOT_DIR."/views/$view.php";
         return ob_get_clean();
