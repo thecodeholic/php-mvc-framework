@@ -10,6 +10,7 @@ namespace app\controllers;
 
 use app\core\Controller;
 use app\core\Request;
+use app\models\Register;
 
 /**
  * Class SiteController
@@ -35,8 +36,10 @@ class SiteController extends Controller
     public function register(Request $request)
     {
         if ($request->getMethod() === 'post') {
+            $registerModel = new Register();
+            $registerModel->loadData($request->getBody());
             echo '<pre>';
-            var_dump($request->getBody());
+            var_dump($registerModel);
             echo '</pre>';
             exit;
         }
