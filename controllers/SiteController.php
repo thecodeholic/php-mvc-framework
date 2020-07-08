@@ -38,10 +38,9 @@ class SiteController extends Controller
         if ($request->getMethod() === 'post') {
             $registerModel = new Register();
             $registerModel->loadData($request->getBody());
-            echo '<pre>';
-            var_dump($registerModel);
-            echo '</pre>';
-            exit;
+            if ($registerModel->validate() && $registerModel->register()) {
+                return 'Show success page';
+            }
         }
         $this->setLayout('auth');
         return $this->render('register');
