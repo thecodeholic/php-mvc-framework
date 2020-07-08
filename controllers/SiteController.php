@@ -23,6 +23,12 @@ class SiteController extends Controller
         return $this->render('home');
     }
 
+    public function login()
+    {
+        $this->setLayout('auth');
+        return $this->render('login');
+    }
+
     public function contact()
     {
         return $this->render('contact');

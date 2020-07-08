@@ -44,6 +44,7 @@ class Router
         }
         if (is_array($callback)) {
             $controller = new $callback[0];
+            Application::$app->controller = $controller;
             $callback[0] = $controller;
         }
         return call_user_func($callback);
@@ -51,9 +52,10 @@ class Router
 
     public function renderView($view, $params = [])
     {
+        $layoutName = Application::$app->controller->layout;
         $viewContent = $this->renderViewOnly($view, $params);
         ob_start();
-        include_once Application::$ROOT_DIR.'/views/layout.php';
+        include_once Application::$ROOT_DIR."/views/layouts/$layoutName.php";
         $layoutContent = ob_get_clean();
         return str_replace('{{content}}', $viewContent, $layoutContent);
     }
