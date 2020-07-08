@@ -42,6 +42,10 @@ class Router
         if (is_string($callback)) {
             return $this->renderView($callback);
         }
+        if (is_array($callback)) {
+            $controller = new $callback[0];
+            $callback[0] = $controller;
+        }
         return call_user_func($callback);
     }
 
