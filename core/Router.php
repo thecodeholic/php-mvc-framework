@@ -30,6 +30,11 @@ class Router
         $this->routeMap['get'][$url] = $callback;
     }
 
+    public function post(string $url, $callback)
+    {
+        $this->routeMap['post'][$url] = $callback;
+    }
+
     public function resolve()
     {
         $method = $this->request->getMethod();
@@ -47,7 +52,7 @@ class Router
             Application::$app->controller = $controller;
             $callback[0] = $controller;
         }
-        return call_user_func($callback);
+        return call_user_func($callback, $this->request);
     }
 
     public function renderView($view, $params = [])
