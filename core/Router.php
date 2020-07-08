@@ -47,6 +47,13 @@ class Router
 
     public function renderView($view, $params = [])
     {
-        return 'Rendering view '.$view;
+        return $this->renderViewOnly($view, $params);
+    }
+
+    public function renderViewOnly($view, $params = [])
+    {
+        ob_start();
+        include_once Application::$ROOT_DIR."/views/$view.php";
+        return ob_get_clean();
     }
 }
