@@ -35,20 +35,18 @@ class SiteController extends Controller
 
     public function register(Request $request)
     {
+        $registerModel = new Register();
         if ($request->getMethod() === 'post') {
-            $registerModel = new Register();
             $registerModel->loadData($request->getBody());
             if ($registerModel->validate() && $registerModel->register()) {
                 return 'Show success page';
             }
 
-            echo '<pre>';
-            var_dump($registerModel->errors);
-            echo '</pre>';
-            exit;
         }
         $this->setLayout('auth');
-        return $this->render('register');
+        return $this->render('register', [
+            'model' => $registerModel
+        ]);
     }
 
     public function contact()
