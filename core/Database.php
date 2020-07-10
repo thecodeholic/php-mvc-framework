@@ -83,6 +83,11 @@ class Database
         $statement->execute();
     }
 
+    public function prepare($sql): \PDOStatement
+    {
+        return $this->pdo->prepare($sql);
+    }
+
     private function log($message)
     {
         echo "[" . date("Y-m-d H:i:s") . "] - " . $message . PHP_EOL;

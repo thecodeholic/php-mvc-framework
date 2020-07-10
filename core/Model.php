@@ -21,6 +21,7 @@ class Model
     const RULE_MIN = 'min';
     const RULE_MAX = 'max';
     const RULE_MATCH = 'match';
+    const RULE_UNIQUE = 'unique';
 
     public array $errors = [];
 
@@ -62,6 +63,18 @@ class Model
                 if ($ruleName === self::RULE_MATCH && $value !== $this->{$rule['match']}) {
                     $this->addError($attribute, self::RULE_MATCH, ['match' => $rule['match']]);
                 }
+                if ($ruleName === self::RULE_UNIQUE) {
+                    $className = $rule['class'];
+                    $tableName = $className::tableName();
+                    $db = Application::$app->db;
+                    $statement = $db->prepare("SELECT * FROM $tableName WHERE $attribute = :$attribute");
+                    $statement->bindValue(":$attribute", $value);
+                    $statement->execute();
+                    $record = $statement->fetchObject();
+                    if ($record) {
+                        $this->addError($attribute, self::RULE_UNIQUE);
+                    }
+                }
             }
         }
         return empty($this->errors);
@@ -75,6 +88,7 @@ class Model
             self::RULE_MIN => 'Min length of this field must be {min}',
             self::RULE_MAX => 'Max length of this field must be {max}',
             self::RULE_MATCH => 'This field must be the same as {match}',
+            self::RULE_UNIQUE => 'Record with with this {field} already exists',
         ];
     }
 
@@ -85,6 +99,7 @@ class Model
 
     public function addError(string $attribute, string $rule, $params = [])
     {
+        $params['field'] ??= $attribute;
         $errorMessage = $this->errorMessage($rule);
         foreach ($params as $key => $value) {
             $errorMessage = str_replace("{{$key}}", $value, $errorMessage);

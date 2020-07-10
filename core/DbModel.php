@@ -30,7 +30,7 @@ abstract class DbModel extends Model
         $tableName = $this->tableName();
         $attributes = $this->attributes();
         $params = array_map(fn($attr) => ":$attr", $attributes);
-        $statement = $this->prepare("INSERT INTO $tableName (" . implode(",", $attributes) . ") 
+        $statement = self::prepare("INSERT INTO $tableName (" . implode(",", $attributes) . ") 
                 VALUES (" . implode(",", $params) . ")");
         foreach ($attributes as $attribute) {
             $statement->bindValue(":$attribute", $this->{$attribute});
@@ -39,8 +39,8 @@ abstract class DbModel extends Model
         return true;
     }
 
-    public function prepare($sql): \PDOStatement
+    public static function prepare($sql): \PDOStatement
     {
-        return Application::$app->db->pdo->prepare($sql);
+        return Application::$app->db->prepare($sql);
     }
 }
