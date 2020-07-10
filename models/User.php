@@ -8,6 +8,7 @@
 namespace app\models;
 
 
+use app\core\DbModel;
 use app\core\Model;
 
 /**
@@ -16,13 +17,23 @@ use app\core\Model;
  * @author  Zura Sekhniashvili <zurasekhniashvili@gmail.com>
  * @package app\models
  */
-class Register extends Model
+class User extends DbModel
 {
     public string $firstname = '';
     public string $lastname = '';
     public string $email = '';
     public string $password = '';
     public string $passwordConfirm = '';
+
+    public static function tableName(): string
+    {
+        return 'users';
+    }
+
+    public function attributes(): array
+    {
+        return ['firstname', 'lastname', 'email', 'password'];
+    }
 
     public function rules()
     {

@@ -10,7 +10,7 @@ namespace app\controllers;
 
 use app\core\Controller;
 use app\core\Request;
-use app\models\Register;
+use app\models\User;
 
 /**
  * Class SiteController
@@ -35,10 +35,10 @@ class SiteController extends Controller
 
     public function register(Request $request)
     {
-        $registerModel = new Register();
+        $registerModel = new User();
         if ($request->getMethod() === 'post') {
             $registerModel->loadData($request->getBody());
-            if ($registerModel->validate() && $registerModel->register()) {
+            if ($registerModel->validate() && $registerModel->save()) {
                 return 'Show success page';
             }
 
