@@ -37,6 +37,6 @@ class Register extends Model
 
     public function register()
     {
-
+        return true;
     }
 }

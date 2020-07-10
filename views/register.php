@@ -18,7 +18,7 @@ $form = new Form();
         </div>
     </div>
     <?php echo $form->field($model, 'email') ?>
-    <?php echo $form->field($model, 'password') ?>
-    <?php echo $form->field($model, 'passwordConfirm') ?>
+    <?php echo $form->field($model, 'password')->passwordField() ?>
+    <?php echo $form->field($model, 'passwordConfirm')->passwordField() ?>
     <button class="btn btn-success">Submit</button>
 <?php Form::end() ?>
