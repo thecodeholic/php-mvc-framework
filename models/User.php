@@ -9,7 +9,6 @@ namespace app\models;
 
 
 use app\core\DbModel;
-use app\core\Model;
 
 /**
  * Class Register
@@ -33,6 +32,17 @@ class User extends DbModel
     public function attributes(): array
     {
         return ['firstname', 'lastname', 'email', 'password'];
+    }
+
+    public function labels(): array
+    {
+        return [
+            'firstname' => 'First name',
+            'lastname' => 'Last name',
+            'email' => 'Email',
+            'password' => 'Password',
+            'passwordConfirm' => 'Password Confirm'
+        ];
     }
 
     public function rules()

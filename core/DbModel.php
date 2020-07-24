@@ -18,8 +18,6 @@ abstract class DbModel extends Model
 {
     abstract public static function tableName(): string;
 
-    abstract public function attributes(): array;
-
     public function primaryKey(): string
     {
         return 'id';

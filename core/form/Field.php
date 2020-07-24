@@ -31,7 +31,7 @@ class Field
      * @param \app\core\Model $model
      * @param string          $attribute
      */
-    public function __construct(\app\core\Model $model, string $attribute)
+    public function __construct(Model $model, string $attribute)
     {
         $this->type = self::TYPE_TEXT;
         $this->model = $model;
@@ -47,7 +47,7 @@ class Field
                     %s
                 </div>
             </div>',
-            $this->attribute,
+            $this->model->labels()[$this->attribute],
             $this->type,
             $this->model->hasError($this->attribute) ? ' is-invalid' : '',
             $this->attribute,
