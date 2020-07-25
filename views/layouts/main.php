@@ -31,21 +31,33 @@
                 <a class="nav-link" href="/about">About</a>
             </li>
         </ul>
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="/login">Login</a>
-            </li>
-            <li class="nav-item active">
-                <a class="nav-link" href="/register">Register</a>
-            </li>
-        </ul>
+        <?php use app\core\Application;
+
+        if (Application::isGuest()): ?>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/register">Register</a>
+                </li>
+            </ul>
+        <?php else: ?>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/logout">
+                        Welcome <?php echo Application::$app->user->getDisplayName() ?> (Logout)
+                    </a>
+                </li>
+            </ul>
+        <?php endif; ?>
     </div>
 </nav>
 
 <div class="container">
-    <?php if (\app\core\Application::$app->session->getFlash('success')): ?>
+    <?php if (Application::$app->session->getFlash('success')): ?>
         <div class="alert alert-success">
-            <p><?php echo \app\core\Application::$app->session->getFlash('success') ?></p>
+            <p><?php echo Application::$app->session->getFlash('success') ?></p>
         </div>
     <?php endif; ?>
     {{content}}
