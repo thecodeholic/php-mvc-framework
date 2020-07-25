@@ -9,6 +9,7 @@ namespace app\controllers;
 
 
 use app\core\Application;
+use app\core\AuthMiddleware;
 use app\core\Controller;
 use app\core\Request;
 use app\core\Response;
@@ -23,6 +24,11 @@ use app\models\User;
  */
 class SiteController extends Controller
 {
+    public function __construct()
+    {
+        $this->registerMiddleware(new AuthMiddleware());
+    }
+
     public function home()
     {
         return $this->render('home', [
@@ -73,5 +79,10 @@ class SiteController extends Controller
     public function contact()
     {
         return $this->render('contact');
+    }
+
+    public function profile()
+    {
+        return $this->render('profile');
     }
 }
