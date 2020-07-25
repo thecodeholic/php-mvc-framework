@@ -11,6 +11,7 @@ namespace app\controllers;
 use app\core\Application;
 use app\core\Controller;
 use app\core\Request;
+use app\core\Response;
 use app\models\LoginForm;
 use app\models\User;
 
@@ -61,6 +62,12 @@ class SiteController extends Controller
         return $this->render('register', [
             'model' => $registerModel
         ]);
+    }
+
+    public function logout(Request $request, Response $response)
+    {
+        Application::$app->logout();
+        $response->redirect('/');
     }
 
     public function contact()
