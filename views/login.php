@@ -1,14 +1,15 @@
-<h1>Contact page</h1>
+<?php
 
-<form>
-    <div class="form-group">
-        <label>Email address</label>
-        <input type="email" class="form-control" name="email">
-        <small class="form-text text-muted">We'll never share your email with anyone else.</small>
-    </div>
-    <div class="form-group">
-        <label>Password</label>
-        <input type="password" class="form-control" name="password">
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+/** @var $model \app\models\LoginForm */
+
+use app\core\form\Form;
+
+?>
+
+<h1>Login</h1>
+
+<?php $form = Form::begin('', 'post') ?>
+    <?php echo $form->field($model, 'email') ?>
+    <?php echo $form->field($model, 'password')->passwordField() ?>
+    <button class="btn btn-success">Submit</button>
+<?php Form::end() ?>
