@@ -4,6 +4,7 @@
  * Date: 7/7/2020
  * Time: 9:57 AM
  */
+
 namespace app\core;
 
 /**
@@ -17,10 +18,11 @@ class Application
     public static Application $app;
     public static string $ROOT_DIR;
     public string $userClass;
+    public string $layout = 'main';
     public Router $router;
     public Request $request;
     public Response $response;
-    public Controller $controller;
+    public ?Controller $controller = null;
     public Database $db;
     public Session $session;
     public ?DbModel $user;
@@ -55,6 +57,7 @@ class Application
         $primaryKey = $user->primaryKey();
         $value = $user->{$primaryKey};
         Application::$app->session->set('user', $value);
+
         return true;
     }
 

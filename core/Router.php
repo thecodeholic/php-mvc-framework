@@ -58,7 +58,10 @@ class Router
 
     public function renderView($view, $params = [])
     {
-        $layoutName = Application::$app->controller->layout;
+        $layoutName = Application::$app->layout;
+        if (Application::$app->controller) {
+            $layoutName = Application::$app->controller->layout;
+        }
         $viewContent = $this->renderViewOnly($view, $params);
         ob_start();
         include_once Application::$ROOT_DIR."/views/layouts/$layoutName.php";
