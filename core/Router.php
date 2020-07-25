@@ -7,6 +7,8 @@
 
 namespace app\core;
 
+use app\core\exception\NotFoundException;
+
 /**
  * Class Router
  *
@@ -41,8 +43,7 @@ class Router
         $url = $this->request->getUrl();
         $callback = $this->routeMap[$method][$url] ?? false;
         if (!$callback) {
-            $this->response->statusCode(404);
-            return 'Not Found';
+            throw new NotFoundException();
         }
         if (is_string($callback)) {
             return $this->renderView($callback);
