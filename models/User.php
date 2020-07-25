@@ -9,6 +9,7 @@ namespace app\models;
 
 
 use app\core\DbModel;
+use app\core\UserModel;
 
 /**
  * Class Register
@@ -16,7 +17,7 @@ use app\core\DbModel;
  * @author  Zura Sekhniashvili <zurasekhniashvili@gmail.com>
  * @package app\models
  */
-class User extends DbModel
+class User extends UserModel
 {
     public string $firstname = '';
     public string $lastname = '';
@@ -61,6 +62,12 @@ class User extends DbModel
     public function save()
     {
         $this->password = password_hash($this->password, PASSWORD_DEFAULT);
+
         return parent::save();
+    }
+
+    public function getDisplayName(): string
+    {
+        return $this->firstname . ' ' . $this->lastname;
     }
 }
