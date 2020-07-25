@@ -26,7 +26,7 @@ class SiteController extends Controller
 {
     public function __construct()
     {
-        $this->registerMiddleware(new AuthMiddleware());
+        $this->registerMiddleware(new AuthMiddleware(['profile']));
     }
 
     public function home()
