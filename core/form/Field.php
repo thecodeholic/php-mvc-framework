@@ -47,7 +47,7 @@ class Field
                     %s
                 </div>
             </div>',
-            $this->model->labels()[$this->attribute],
+            $this->model->getLabel($this->attribute),
             $this->type,
             $this->model->hasError($this->attribute) ? ' is-invalid' : '',
             $this->attribute,
