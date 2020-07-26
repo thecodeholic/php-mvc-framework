@@ -5,8 +5,10 @@
  * Time: 9:19 AM
  */
 
-namespace app\core;
+namespace app\core\db;
 
+use app\core\Application;
+use app\core\Model;
 
 /**
  * Class DbModel

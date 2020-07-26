@@ -5,7 +5,7 @@
  * Time: 8:09 AM
  */
 
-namespace app\core;
+namespace app\core\db;
 
 
 /**
