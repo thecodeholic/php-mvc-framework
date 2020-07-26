@@ -5,9 +5,10 @@
  * Time: 11:33 AM
  */
 
-namespace app\core;
+namespace app\core\middlewares;
 
 
+use app\core\Application;
 use app\core\exception\ForbiddenException;
 
 /**

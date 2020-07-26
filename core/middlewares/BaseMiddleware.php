@@ -5,7 +5,7 @@
  * Time: 11:33 AM
  */
 
-namespace app\core;
+namespace app\core\middlewares;
 
 
 /**

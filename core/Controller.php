@@ -7,7 +7,7 @@
 
 namespace app\core;
 
-
+use app\core\middlewares\BaseMiddleware;
 /**
  * Class Controller
  *
@@ -40,7 +40,7 @@ class Controller
     }
 
     /**
-     * @return \app\core\BaseMiddleware[]
+     * @return \app\core\middlewares\BaseMiddleware[]
      */
     public function getMiddlewares(): array
     {
