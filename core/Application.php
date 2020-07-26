@@ -25,6 +25,7 @@ class Application
     public ?Controller $controller = null;
     public Database $db;
     public Session $session;
+    public View $view;
     public ?DbModel $user;
 
     public function __construct($rootDir, $config)
@@ -38,6 +39,7 @@ class Application
         $this->router = new Router($this->request, $this->response);
         $this->db = new Database($config['db']);
         $this->session = new Session();
+        $this->view = new View();
 
         $userId = Application::$app->session->get('user');
         if ($userId) {
