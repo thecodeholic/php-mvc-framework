@@ -8,6 +8,8 @@
 namespace app\core\db;
 
 
+use app\core\Application;
+
 /**
  * Class Database
  *
