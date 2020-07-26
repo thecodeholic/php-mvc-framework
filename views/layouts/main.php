@@ -31,7 +31,7 @@
                 <a class="nav-link" href="/about">About</a>
             </li>
         </ul>
-        <?php use app\core\Application;
+        <?php use thecodeholic\phpmvc\Application;
 
         if (Application::isGuest()): ?>
             <ul class="navbar-nav ml-auto">

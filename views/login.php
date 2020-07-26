@@ -2,7 +2,7 @@
 
 /** @var $model \app\models\LoginForm */
 
-use app\core\form\Form;
+use thecodeholic\phpmvc\form\Form;
 
 ?>
 

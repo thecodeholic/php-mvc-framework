@@ -8,7 +8,7 @@
 namespace app\controllers;
 
 
-use app\core\Controller;
+use thecodeholic\phpmvc\Controller;
 
 /**
  * Class AboutController

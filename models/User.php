@@ -8,8 +8,8 @@
 namespace app\models;
 
 
-use app\core\DbModel;
-use app\core\UserModel;
+use thecodeholic\phpmvc\DbModel;
+use thecodeholic\phpmvc\UserModel;
 
 /**
  * Class Register
