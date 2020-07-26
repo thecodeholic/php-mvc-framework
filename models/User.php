@@ -19,6 +19,7 @@ use app\core\UserModel;
  */
 class User extends UserModel
 {
+    public int $id = 0;
     public string $firstname = '';
     public string $lastname = '';
     public string $email = '';
