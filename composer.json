@@ -13,6 +13,6 @@
     },
     "require": {
         "vlucas/phpdotenv": "^5.0",
-        "thecodeholic/php-mvc-core": "^v1.0.3"
+        "thecodeholic/php-mvc-core": "^v1.0.4"
     }
 }
