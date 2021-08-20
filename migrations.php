@@ -23,3 +23,5 @@ $config = [
 $app = new Application(__DIR__, $config);
 
 $app->db->applyMigrations();
+
+//this is some comment
