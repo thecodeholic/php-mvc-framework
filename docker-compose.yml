@@ -1,0 +1,10 @@
+version: "3.7"
+
+services:
+  app:
+    build: docker
+    ports:
+      - "80:80"
+    volumes:
+      # Mount source-code for development
+      - ./:/var/www
