@@ -25,7 +25,7 @@ $config = [
 $app = new Application(dirname(__DIR__), $config);
 
 $app->on(Application::EVENT_BEFORE_REQUEST, function(){
-    echo "Before request from second installation";
+    // echo "Before request from second installation";
 });
 
 $app->router->get('/', [SiteController::class, 'home']);
