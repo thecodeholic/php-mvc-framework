@@ -5,7 +5,7 @@ services:
     build: ./docker
     image: thecodeholic/php_mvc
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       # Mount source-code for development
       - ./:/var/www
