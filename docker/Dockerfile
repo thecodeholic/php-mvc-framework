@@ -10,6 +10,7 @@ RUN a2enmod rewrite
 RUN apt-get update && \
     apt-get install \
     libzip-dev \
+    wget \
     git \
     unzip \
     -y --no-install-recommends
@@ -17,13 +18,24 @@ RUN apt-get update && \
 # Install PHP Extensions
 RUN docker-php-ext-install zip pdo_mysql
 
-# Install composer
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-RUN php composer-setup.php
-RUN php -r "unlink('composer-setup.php');"
-RUN mv composer.phar /usr/local/bin/composer
+# RUN pecl install -o -f xdebug-3.1.3 \
+#     && rm -rf /tmp/pear
 
+# Copy composer
+COPY ./install-composer.sh ./
+
+# Copy php.ini
+COPY ./php.ini /usr/local/etc/php/
+
+# Cleanup packages and install composer
+RUN apt-get purge -y g++ \
+    && apt-get autoremove -y \
+    && rm -r /var/lib/apt/lists/* \
+    && rm -rf /tmp/* \
+    && sh ./install-composer.sh \
+    && rm ./install-composer.sh
+
+# Change the current working directory
 WORKDIR /var/www
 
 # Change the owner of the container document root
