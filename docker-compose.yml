@@ -2,9 +2,19 @@ version: "3.7"
 
 services:
   app:
-    build: docker
+    build: ./docker
+    image: thecodeholic/php_mvc
     ports:
       - "80:80"
     volumes:
       # Mount source-code for development
       - ./:/var/www
+  db:
+    image: mysql:8
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: php_mvc
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: php_mvc
+      MYSQL_PASSWORD: php_mvc

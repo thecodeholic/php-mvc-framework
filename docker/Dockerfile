@@ -6,11 +6,15 @@ COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 # Enable rewrite mode
 RUN a2enmod rewrite
 
-# Install git
-RUN apt-get update
-RUN apt-get install libzip-dev git unzip -y --no-install-recommends
+# Install necessary packages
+RUN apt-get update && \
+    apt-get install \
+    libzip-dev \
+    git \
+    unzip \
+    -y --no-install-recommends
 
-# RUN docker-php-ext-install zip intl mbstring pdo_mysql exif gd
+# Install PHP Extensions
 RUN docker-php-ext-install zip pdo_mysql
 
 # Install composer
