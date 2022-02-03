@@ -14,9 +14,13 @@ services:
     ports:
       - "3307:3306"
     volumes:
+      - mysql-data:/var/lib/mysql
       - ./docker/mysql-config.cnf:/etc/mysql/conf.d/config.cnf
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: php_mvc
       MYSQL_USER: php_mvc
       MYSQL_PASSWORD: php_mvc
+
+volumes:
+  mysql-data:
