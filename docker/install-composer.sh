@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 SIGNATURE=$(php -r "echo hash_file('SHA384', 'composer-setup.php');")
 EXPECTED_SIGNATURE=$(wget -q -O - https://composer.github.io/installer.sig)

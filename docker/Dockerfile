@@ -21,7 +21,7 @@ RUN docker-php-ext-install zip pdo_mysql
 # RUN pecl install -o -f xdebug-3.1.3 \
 #     && rm -rf /tmp/pear
 
-# Copy composer
+# Copy composer installable
 COPY ./install-composer.sh ./
 
 # Copy php.ini
@@ -41,5 +41,6 @@ WORKDIR /var/www
 # Change the owner of the container document root
 RUN chown -R www-data:www-data /var/www
 
+# Start Apache in foreground
 CMD ["apache2-foreground"]
 
