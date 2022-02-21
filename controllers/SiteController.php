@@ -85,4 +85,11 @@ class SiteController extends Controller
     {
         return $this->render('profile');
     }
+
+    public function profileWithId(Request $request)
+    {
+        echo '<pre>';
+        var_dump($request->getBody());
+        echo '</pre>';
+    }
 }
