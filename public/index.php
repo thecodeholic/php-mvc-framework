@@ -38,6 +38,7 @@ $app->router->get('/logout', [SiteController::class, 'logout']);
 $app->router->get('/contact', [SiteController::class, 'contact']);
 $app->router->get('/about', [AboutController::class, 'index']);
 $app->router->get('/profile', [SiteController::class, 'profile']);
+$app->router->get('/profile/{id:\d+}/{username}', [SiteController::class, 'login']);
 // /profile/{id}
 // /profile/13
 // \/profile\/\w+
