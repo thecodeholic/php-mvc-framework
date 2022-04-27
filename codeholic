@@ -13,9 +13,12 @@ switch($argv[1]) {
         // Path to main 'index.php' file which is an entry point for our mvc app
         $pathToMainIndex = 'public/';
 
+        // Default 'host' url
+        $host = '127.0.0.1';
+
         // If PHP version is 8.0.0 or up, dynamically select a port to run PHP's built-in server on
         if (version_compare(phpversion(), '8.0.0') > -1) {
-            exec('php -S 127.0.0.1:0 -t ' . $pathToMainIndex);
+            exec(`php -S $host:0 -t $pathToMainIndex`);
             return;
         }
 
@@ -27,7 +30,7 @@ switch($argv[1]) {
         // Select a port that is free so that PHP's built-in server can be run on it
         while (!$portIsFree) {
             // If the PHP's built-in server can be run on the current port, stop the loop
-            if (exec('php -S 127.0.0.1:' . $port . ' -t ' . $pathToMainIndex)) {
+            if (exec(`php -S $host:$port -t $pathToMainIndex`)) {
                 $portIsFree = true;
                 // Don't know which one is more useful here: 'continue' or 'break'
                 continue;  // Thus, just using 'continue' here
@@ -47,6 +50,6 @@ switch($argv[1]) {
 
     // If an invalid command-line argument is provided
     default:
-        echo '!!! Invalid command line argument !!!';
+        echo '!!! Invalid command line argument !!!' . PHP_EOL;
         break;
 }
