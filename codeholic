@@ -8,13 +8,15 @@ if (!isset($argv[1])) {
 
 // Compare command-line arguments and execute their corresponding code
 switch($argv[1]) {
-    // For executing the command 'php codeholic serve'
-    case 'serve':
-        // Path to main 'index.php' file which is an entry point for our mvc app
-        $pathToMainIndex = 'public/';
+    case 'serve': // For command 'php codeholic serve'
+        $pathToMainIndex = 'public/';  // Path to the entry point of our app
+        $host = '127.0.0.1';  // Default 'host' url for our app
+        $port = 8080;  // Default port for our app to use
 
-        // Default 'host' url
-        $host = '127.0.0.1';
+        // If default port is free, run PHP's built-in server on it
+        if (exec(`php -S $host:$port -t $pathToMainIndex`)) {
+            return;
+        }
 
         // If PHP version is 8.0.0 or up, dynamically select a port to run PHP's built-in server on
         if (version_compare(phpversion(), '8.0.0') > -1) {
@@ -23,7 +25,7 @@ switch($argv[1]) {
         }
 
         // If PHP version is less than 8.0.0, execute following code
-        $port = 8080;  // Default port for PHP's built-in server
+        $port++;  // Increment 'port number' as default port is not available for the use
         $portLimit = 8100;
         $portIsFree = false;
 
@@ -32,15 +34,12 @@ switch($argv[1]) {
             // If the PHP's built-in server can be run on the current port, stop the loop
             if (exec(`php -S $host:$port -t $pathToMainIndex`)) {
                 $portIsFree = true;
-                // Don't know which one is more useful here: 'continue' or 'break'
-                continue;  // Thus, just using 'continue' here
-                // break;
+                break;
             }
 
-            // Limit the iterations of the loop
-            // We don't want this loop to run forever, if no port is free for use
+            // Limited the iterations of the loop so that this loop does not run like forever if no port is available for use
             if ($port > $portLimit) {
-                echo '!!! App failed to run. No port is free for the app to use !!!' . PHP_EOL;
+                echo '!!! Failed to run the app. No ports are free for the use !!!' . PHP_EOL;
                 break;
             }
 
@@ -50,6 +49,6 @@ switch($argv[1]) {
 
     // If an invalid command-line argument is provided
     default:
-        echo '!!! Invalid command line argument !!!' . PHP_EOL;
+        echo '!!! Invalid command line argument: [' . $argv[1] . '] !!!' . PHP_EOL;
         break;
 }
