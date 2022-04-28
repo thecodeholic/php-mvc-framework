@@ -3,12 +3,11 @@
 // If no arguments were provided in the command line
 if (!isset($argv[1])) {
     throw new Exception('!!! No command-line arguments were provided !!!');
-    return;
+    exit;
 }
 
 // Re-arrange the command-line arguments
-// Also, remove first two array elements as they are not needed further
-$arguments = array_slice(restructureArgsArray($argv), 2);
+$arguments = restructureArgsArray($argv);
 
 // Compare command-line arguments and execute their corresponding code
 switch ($argv[1]) {
@@ -28,13 +27,16 @@ switch ($argv[1]) {
  * 
  * @param array $argv => Contains command-line arguments provided by the user
  * 
- * @return array 
+ * @return array $newArgsArray => Contains restructered command-line arguments
  */
 function restructureArgsArray(array $args)
 {
+    // Remove first two 'key => value' pairs from the array as they are not really neeeded
+    $args = array_slice($args, 2);
+
     $newArgsArray = [];
 
-    // Divide each array element to a key pair value
+    // Convert each array element to a new 'key => value' pair
     // For example, '--port=8080' to '--port' => '8080'
     foreach ($args as $arg) {
         if (strpos($arg, '=')) {
@@ -49,7 +51,7 @@ function restructureArgsArray(array $args)
 }
 
 /**
- * Serve the app using the command 'php codeholic' serve
+ * Serve the app using the command 'php codeholic serve'
  * 
  * @param array $argsArray => A restructered array containing command-line arguments
  * 
@@ -68,16 +70,17 @@ function serveTheApp(array $argsArray)
         'port' => '--port'
     ];
 
-    // If an invalid parameter is encountered, show the message & stop the execution
+    // If an invalid parameter is encountered, show the error message & stop the execution
     foreach ($argsArray as $arg => $value) {
         if (!in_array($arg, $possibleParams)) {
-            echoToConsole("!!! 'php codeholic serve': Invalid parameter [ $arg ] provided in the command !!!");
+            throw new Exception("!!! 'php codeholic serve': Invalid parameter [ $arg ] !!!");
             exit;
         }
 
-        // If an invalid parameter value is provided
+        // If no value for parameter is passed, show the error message & stop the execution
+        // In future, this needs to be changed, if we introduce a new parameter that does not require a value
         if (!$value) {
-            echoToConsole("!!! 'php codeholic serve': Invalid value for the parameter [ $arg ] !!!");
+            throw new Exception("!!! 'php codeholic serve': Invalid value for the parameter [ $arg ] !!!");
             exit;
         }
     }
@@ -104,11 +107,11 @@ function serveTheApp(array $argsArray)
     }
 
     // If PHP version is less than 8.0.0, execute following code
-    $port++;  // Increment 'port number' as default port is not available for the use
-    $portLimit = 8100;
+    $port++;  // Increment 'port number', as default port is not available for the use
+    $portLimit = $port + 30;  // To set the limit of iterations for the while loop below
     $portIsFree = false;
 
-    // Select a port that is free so that PHP's built-in server can be run on it
+    // Run PHP's built-in server on a port that is available for use
     while (!$portIsFree) {
         // If the PHP's built-in server can be run on the current port, stop the loop
         if (exec(`php -S $host:$port -t $pathToMainIndex`)) {
@@ -116,25 +119,13 @@ function serveTheApp(array $argsArray)
             break;
         }
 
-        // Limited the iterations of the loop so that this loop does not run like forever if no port is available for use
+        // Limited the iterations of the loop
+        // We don't want this loop to run forever if no port is available for use
         if ($port > $portLimit) {
-            echoToConsole('!!! Failed to run the app. No ports are available for use !!!');
+            throw new Exception('!!! App failed to run. Ports limit exceeded. Maybe, try a different ports range !!!');
             break;
         }
 
         $port++;
     }
-}
-
-/**
- * Echo a text message to the console
- * 
- * @param string $text
- * 
- * @return null
- */
-function echoToConsole(string $message)
-{
-    echo $message . PHP_EOL;
-    return;
 }
