@@ -17,8 +17,7 @@ Minimalistic custom framework created for educational purposes.
 6. Go to the `public` folder 
 7. Start php server by running command `php -S 127.0.0.1:8080` 
 8. Open in browser http://127.0.0.1:8080
-9. You can skip `steps 6 & 7` by running the command `php codeholic serve` in the `terminal / cmd`
-10. You need to be in the same directory where this `README.md` file is to perform the `step 9`
+9. You can skip `steps 6 & 7` by running the command `php codeholic serve` in the `terminal / cmd`. You must be in the same directory where this `README.md` file is to perform this step
 
 ------
 ## Installation using docker

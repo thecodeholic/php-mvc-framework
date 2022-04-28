@@ -2,53 +2,133 @@
 
 // If no arguments were provided in the command line
 if (!isset($argv[1])) {
-    echo '!!! No command-line arguments were provided !!!' . PHP_EOL;
+    throw new Exception('!!! No command-line arguments were provided !!!');
     return;
 }
 
+// Re-arrange the command-line arguments
+// Also, remove first two array elements as they are not needed further
+$arguments = array_slice(restructureArgsArray($argv), 2);
+
 // Compare command-line arguments and execute their corresponding code
-switch($argv[1]) {
-    case 'serve': // For command 'php codeholic serve'
-        $pathToMainIndex = 'public/';  // Path to the entry point of our app
-        $host = '127.0.0.1';  // Default 'host' url for our app
-        $port = 8080;  // Default port for our app to use
-
-        // If default port is free, run PHP's built-in server on it
-        if (exec(`php -S $host:$port -t $pathToMainIndex`)) {
-            return;
-        }
-
-        // If PHP version is 8.0.0 or up, dynamically select a port to run PHP's built-in server on
-        if (version_compare(phpversion(), '8.0.0') > -1) {
-            exec(`php -S $host:0 -t $pathToMainIndex`);
-            return;
-        }
-
-        // If PHP version is less than 8.0.0, execute following code
-        $port++;  // Increment 'port number' as default port is not available for the use
-        $portLimit = 8100;
-        $portIsFree = false;
-
-        // Select a port that is free so that PHP's built-in server can be run on it
-        while (!$portIsFree) {
-            // If the PHP's built-in server can be run on the current port, stop the loop
-            if (exec(`php -S $host:$port -t $pathToMainIndex`)) {
-                $portIsFree = true;
-                break;
-            }
-
-            // Limited the iterations of the loop so that this loop does not run like forever if no port is available for use
-            if ($port > $portLimit) {
-                echo '!!! Failed to run the app. No ports are free for the use !!!' . PHP_EOL;
-                break;
-            }
-
-            $port++;
-        }
+switch ($argv[1]) {
+    // For command 'php codeholic serve'
+    case 'serve':
+        serveTheApp($arguments);
         break;
 
     // If an invalid command-line argument is provided
     default:
-        echo '!!! Invalid command line argument: [' . $argv[1] . '] !!!' . PHP_EOL;
+        throw new Exception("!!! Invalid command line argument: [ $argv[1] ] !!!");
         break;
+}
+
+/**
+ * Re-arrange the user provided command line arguments
+ * 
+ * @param array $argv => Contains command-line arguments provided by the user
+ * 
+ * @return array 
+ */
+function restructureArgsArray(array $args)
+{
+    $newArgsArray = [];
+
+    // Divide each array element to a key pair value
+    // For example, '--port=8080' to '--port' => '8080'
+    foreach ($args as $arg) {
+        if (strpos($arg, '=')) {
+            $newArgsArray[strtok($arg, '=')] = strtok('');
+            continue;
+        }
+
+        $newArgsArray[$arg] = false;
+    }
+
+    return $newArgsArray;
+}
+
+/**
+ * Serve the app using the command 'php codeholic' serve
+ * 
+ * @param array $argsArray => A restructered array containing command-line arguments
+ * 
+ * @return null
+ */
+function serveTheApp(array $argsArray)
+{
+    $pathToMainIndex = 'public/';  // Path to the entry point of our app
+    $host = '127.0.0.1';  // Default 'host' url for our app
+    $port = 8080;  // Default port for our app to use
+
+    // Possible parameters for the 'php codeholic serve' command
+    // For example, '--port=8080', '--host=127.0.0.1'
+    $possibleParams = [
+        'host' => '--host',
+        'port' => '--port'
+    ];
+
+    // If an invalid parameter is encountered, show the message & stop the execution
+    foreach ($argsArray as $arg => $value) {
+        if (!in_array($arg, $possibleParams)) {
+            echoToConsole("!!! 'php codeholic serve': Invalid parameter [ $arg ] provided in the command !!!");
+            exit;
+        }
+    }
+
+    // If the user provides a custom host url
+    if (array_key_exists($possibleParams['host'], $argsArray)) {
+        $host = $argsArray[$possibleParams['host']];
+    }
+
+    // If the user provides a custom port number
+    if (array_key_exists($possibleParams['port'], $argsArray)) {
+        $port = $argsArray[$possibleParams['port']];
+    }
+
+    // If default port is free, run PHP's built-in server on it
+    if (exec(`php -S $host:$port -t $pathToMainIndex`)) {
+        return;
+    }
+
+    // If PHP version is 8.0.0 or up, dynamically select a port to run PHP's built-in server on
+    if (version_compare(phpversion(), '8.0.0') > -1) {
+        exec(`php -S $host:0 -t $pathToMainIndex`);
+        return;
+    }
+
+    // If PHP version is less than 8.0.0, execute following code
+    $port++;  // Increment 'port number' as default port is not available for the use
+    $portLimit = 8100;
+    $portIsFree = false;
+
+    // Select a port that is free so that PHP's built-in server can be run on it
+    while (!$portIsFree) {
+        // If the PHP's built-in server can be run on the current port, stop the loop
+        if (exec(`php -S $host:$port -t $pathToMainIndex`)) {
+            $portIsFree = true;
+            break;
+        }
+
+        // Limited the iterations of the loop so that this loop does not run like forever if no port is available for use
+        if ($port > $portLimit) {
+            echoToConsole('!!! Failed to run the app. No ports are available for use !!!');
+            break;
+        }
+
+        $port++;
+    }
+}
+
+/**
+ * Echo a text message to the console
+ * 
+ * @param string $text
+ * 
+ * @return null
+ */
+function echoToConsole(string $message)
+{
+    echo $message . PHP_EOL;
+    return;
 }
