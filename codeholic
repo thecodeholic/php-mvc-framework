@@ -74,6 +74,12 @@ function serveTheApp(array $argsArray)
             echoToConsole("!!! 'php codeholic serve': Invalid parameter [ $arg ] provided in the command !!!");
             exit;
         }
+
+        // If an invalid parameter value is provided
+        if (!$value) {
+            echoToConsole("!!! 'php codeholic serve': Invalid value for the parameter [ $arg ] !!!");
+            exit;
+        }
     }
 
     // If the user provides a custom host url
