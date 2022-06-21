@@ -59,25 +59,27 @@ function restructureArgsArray(array $args)
  */
 function serveTheApp(array $argsArray)
 {
-    $pathToMainIndex = 'public/';  // Path to the entry point of our app
-    $host = '127.0.0.1';  // Default 'host' url for our app
-    $port = 8080;  // Default port for our app to use
+    $pathToMainIndex    =   'public/';      // Path to the entry point of our app
+    $host               =   '127.0.0.1';    // Default 'host' url for our app
+    $port               =   8080;           // Default port for our app to use
+    $maxPort            =   null;           // Decide max port to try running PHP's built-in server on before the failure 
 
     // Possible parameters for the 'php codeholic serve' command
-    // For example, '--port=8080', '--host=127.0.0.1'
+    // For example, '--port=8080', '--host=127.0.0.1', '--max-port=9010'
     $possibleParams = [
-        'host' => '--host',
-        'port' => '--port'
+        'host'      =>  '--host',
+        'port'      =>  '--port',
+        'maxPort'   =>  '--max-port'
     ];
 
-    // If an invalid parameter is encountered, show the error message & stop the execution
+    // If an invalid parameter is encountered, throw the exception
     foreach ($argsArray as $arg => $value) {
         if (!in_array($arg, $possibleParams)) {
             throw new Exception("!!! 'php codeholic serve': Invalid parameter [ $arg ] !!!");
             exit;
         }
 
-        // If no value for parameter is passed, show the error message & stop the execution
+        // If no value for parameter is passed, throw the exception
         // In future, this needs to be changed, if we introduce a new parameter that does not require a value
         if (!$value) {
             throw new Exception("!!! 'php codeholic serve': Invalid value for the parameter [ $arg ] !!!");
@@ -95,6 +97,15 @@ function serveTheApp(array $argsArray)
         $port = $argsArray[$possibleParams['port']];
     }
 
+    // If the user explicitly specifies max port limit
+    if (array_key_exists($possibleParams['maxPort'], $argsArray)) {
+        // If the maximum port is less than the the minimum port number, throw an exception
+        if ($argsArray[$possibleParams['maxPort']] < $port) {
+            throw new Exception('The maximum port number cannot be lesser than the currently set port number');
+        }
+        $maxPort = $argsArray[$possibleParams['maxPort']];
+    }
+
     // If default port is free, run PHP's built-in server on it
     if (exec(`php -S $host:$port -t $pathToMainIndex`)) {
         return;
@@ -108,7 +119,7 @@ function serveTheApp(array $argsArray)
 
     // If PHP version is less than 8.0.0, execute following code
     $port++;  // Increment 'port number', as default port is not available for the use
-    $portLimit = $port + 30;  // To set the limit of iterations for the while loop below
+    $portLimit = $maxPort ?? $port + 60;  // To set the limit of iterations for the while loop below
     $portIsFree = false;
 
     // Run PHP's built-in server on a port that is available for use
@@ -119,8 +130,8 @@ function serveTheApp(array $argsArray)
             break;
         }
 
-        // Limited the iterations of the loop
-        // We don't want this loop to run forever if no port is available for use
+        // Limit the iterations of the loop
+        // We don't want this loop to run like forever
         if ($port > $portLimit) {
             throw new Exception('!!! App failed to run. Ports limit exceeded. Maybe, try a different ports range !!!');
             break;
