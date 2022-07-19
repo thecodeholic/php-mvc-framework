@@ -3,7 +3,6 @@
 // If no arguments were provided in the command line
 if (!isset($argv[1])) {
     throw new Exception('!!! No command-line arguments were provided !!!');
-    exit;
 }
 
 // Re-arrange the command-line arguments
@@ -76,14 +75,12 @@ function serveTheApp(array $argsArray)
     foreach ($argsArray as $arg => $value) {
         if (!in_array($arg, $possibleParams)) {
             throw new Exception("!!! 'php codeholic serve': Invalid parameter [ $arg ] !!!");
-            exit;
         }
 
-        // If no value for parameter is passed, throw the exception
+        // If no value for parameter is passed, throw an exception
         // In future, this needs to be changed, if we introduce a new parameter that does not require a value
         if (!$value) {
             throw new Exception("!!! 'php codeholic serve': Invalid value for the parameter [ $arg ] !!!");
-            exit;
         }
     }
 
@@ -98,12 +95,14 @@ function serveTheApp(array $argsArray)
     }
 
     // If the user explicitly specifies max port limit
+    $maxPort = null;
     if (array_key_exists($possibleParams['maxPort'], $argsArray)) {
-        // If the maximum port is less than the the minimum port number, throw an exception
-        if ($argsArray[$possibleParams['maxPort']] < $port) {
-            throw new Exception('The maximum port number cannot be lesser than the currently set port number');
-        }
         $maxPort = $argsArray[$possibleParams['maxPort']];
+    }
+
+    // If the maximum port is less than the the minimum port number, throw an exception
+    if ($maxPort && $maxPort < $port) {
+        throw new Exception("!!! 'php codeholic serve': The maximum port number cannot be lesser than the currently set port number !!!");
     }
 
     // If default port is free, run PHP's built-in server on it
@@ -119,8 +118,8 @@ function serveTheApp(array $argsArray)
 
     // If PHP version is less than 8.0.0, execute following code
     $port++;  // Increment 'port number', as default port is not available for the use
-    $portLimit = $maxPort ?? $port + 60;  // To set the limit of iterations for the while loop below
-    $portIsFree = false;
+    $portLimit  =   $maxPort ?? $port + 60;  // To set the limit of iterations for the while loop below
+    $portIsFree =   false;
 
     // Run PHP's built-in server on a port that is available for use
     while (!$portIsFree) {
@@ -130,11 +129,9 @@ function serveTheApp(array $argsArray)
             break;
         }
 
-        // Limit the iterations of the loop
-        // We don't want this loop to run like forever
+        // Limit the iterations of the loop. We don't want this loop to like run forever
         if ($port > $portLimit) {
             throw new Exception('!!! App failed to run. Ports limit exceeded. Maybe, try a different ports range !!!');
-            break;
         }
 
         $port++;
