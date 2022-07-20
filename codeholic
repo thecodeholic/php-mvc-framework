@@ -1,24 +1,29 @@
 <?php
 
-// If no arguments were provided in the command line
-if (!isset($argv[1])) {
-    throw new Exception('!!! No command-line arguments were provided !!!');
-}
+try {
+    // If no arguments were provided in the command line
+    if (!isset($argv[1])) {
+        throw new Exception('!!! No command-line arguments were provided !!!');
+    }
 
-// Re-arrange the command-line arguments
-$arguments = restructureArgsArray($argv);
+    // Re-arrange the command-line arguments
+    $arguments = restructureArgsArray($argv);
 
-// Compare command-line arguments and execute their corresponding code
-switch ($argv[1]) {
-    // For command 'php codeholic serve'
-    case 'serve':
-        serveTheApp($arguments);
-        break;
+    // Compare command-line arguments and execute their corresponding code
+    switch ($argv[1]) {
+        // For command 'php codeholic serve'
+        case 'serve':
+            serveTheApp($arguments);
+            break;
 
-    // If an invalid command-line argument is provided
-    default:
-        throw new Exception("!!! Invalid command line argument: [ $argv[1] ] !!!");
-        break;
+        // If an invalid command-line argument is provided
+        default:
+            throw new Exception("!!! Invalid command line argument: [ $argv[1] ] !!!");
+            break;
+    }
+} catch (\Exception $error) {
+    echo getPrettyError($error->getMessage());
+    exit;
 }
 
 /**
@@ -102,7 +107,7 @@ function serveTheApp(array $argsArray)
 
     // If the maximum port is less than the the minimum port number, throw an exception
     if ($maxPort && $maxPort < $port) {
-        throw new Exception("!!! 'php codeholic serve': The maximum port number cannot be lesser than the currently set port number !!!");
+        throw new Exception("!!! 'php codeholic serve': The value of '--max-port' must not be less than the currently set port value !!!");
     }
 
     // If default port is free, run PHP's built-in server on it
@@ -131,9 +136,28 @@ function serveTheApp(array $argsArray)
 
         // Limit the iterations of the loop. We don't want this loop to like run forever
         if ($port > $portLimit) {
-            throw new Exception('!!! App failed to run. Ports limit exceeded. Maybe, try a different ports range !!!');
+            throw new Exception("!!! 'php codeholic serve': Failed to serve. Maybe, try a different ports range !!!");
         }
 
         $port++;
     }
+}
+
+/**
+ * Get nicely formatted error message
+ * 
+ * @param string $message
+ * 
+ * @return string
+ */
+function getPrettyError(string $message)
+{
+    $asterisks = '';
+    $asteriskLimit = strlen($message);
+
+    for ($i = 0; $i <= $asteriskLimit; $i++) {
+        $asterisks .= '*';
+    }
+
+    return PHP_EOL . $asterisks . PHP_EOL . $message . PHP_EOL . $asterisks . PHP_EOL;
 }
