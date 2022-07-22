@@ -107,7 +107,7 @@ function serveTheApp(array $argsArray)
 
     // If the maximum port is less than the the minimum port number, throw an exception
     if ($maxPort && $maxPort < $port) {
-        throw new Exception("!!! 'php codeholic serve': The value of '--max-port' must not be less than the currently set port value !!!");
+        throw new Exception("!!! 'php codeholic serve': The value '--max-port=$maxPort' must not be less than '--port=$port' !!!");
     }
 
     // If default port is free, run PHP's built-in server on it
@@ -136,7 +136,7 @@ function serveTheApp(array $argsArray)
 
         // Limit the iterations of the loop. We don't want this loop to like run forever
         if ($port > $portLimit) {
-            throw new Exception("!!! 'php codeholic serve': Failed to serve. Maybe, try a different ports range !!!");
+            throw new Exception("!!! 'php codeholic serve': Failed to serve. Maybe, try a different '[--port] to [--max-port]' range !!!");
         }
 
         $port++;
