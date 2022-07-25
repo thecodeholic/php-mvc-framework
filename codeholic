@@ -95,15 +95,22 @@ function serveTheApp(array $argsArray)
     }
 
     // If the user provides a custom port number
+    $port = null;
     if (array_key_exists($possibleParams['port'], $argsArray)) {
         $port = $argsArray[$possibleParams['port']];
     }
+
+    // Validate that the port is an integer
+    $port && validateInteger($port, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
 
     // If the user explicitly specifies max port limit
     $maxPort = null;
     if (array_key_exists($possibleParams['maxPort'], $argsArray)) {
         $maxPort = $argsArray[$possibleParams['maxPort']];
     }
+
+    // Validate that the max port is an integer
+    $maxPort && validateInteger($maxPort, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
 
     // If the maximum port is less than the the minimum port number, throw an exception
     if ($maxPort && $maxPort < $port) {
@@ -136,7 +143,7 @@ function serveTheApp(array $argsArray)
 
         // Limit the iterations of the loop. We don't want this loop to like run forever
         if ($port > $portLimit) {
-            throw new Exception("!!! 'php codeholic serve': Failed to serve. Maybe, try a different '[--port] to [--max-port]' range !!!");
+            throw new Exception("!!! 'php codeholic serve': Failed to serve. Maybe, try a different '[--port] <=> [--max-port]' range !!!");
         }
 
         $port++;
@@ -160,4 +167,23 @@ function getPrettyError(string $message)
     }
 
     return PHP_EOL . $asterisks . PHP_EOL . $message . PHP_EOL . $asterisks . PHP_EOL;
+}
+
+/**
+ * Validate the the input is an integer
+ * 
+ * @param mixed $input
+ * @param string $exceptionMessage
+ * 
+ * @throws Exception
+ * 
+ * @return true
+ */
+function validateInteger(mixed $input, string $exceptionMessage = '')
+{
+    if (!filter_var($input, FILTER_VALIDATE_INT)) {
+        throw new Exception($exceptionMessage);
+    }
+
+    return true;
 }
