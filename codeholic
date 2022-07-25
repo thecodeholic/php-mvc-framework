@@ -95,13 +95,12 @@ function serveTheApp(array $argsArray)
     }
 
     // If the user provides a custom port number
-    $port = null;
     if (array_key_exists($possibleParams['port'], $argsArray)) {
         $port = $argsArray[$possibleParams['port']];
     }
 
     // Validate that the port is an integer
-    $port && validateInteger($port, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
+    validateInteger($port, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
 
     // If the user explicitly specifies max port limit
     $maxPort = null;
