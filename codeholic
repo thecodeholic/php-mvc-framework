@@ -106,10 +106,14 @@ function serveTheApp(array $argsArray)
 
     // Validate port & max port as integers
     validateInteger($port, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
-    validateInteger($maxPort, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
 
-    // If the maximum port is less than the the minimum port number, throw an exception
-    if ($maxPort < $port) {
+    // Validate '--max-port' only when its value is provided
+    if ($maxPort) {
+        validateInteger((int) $maxPort, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
+    }
+
+    // Compare '--port' & '--max-port' only when both '--port' & '--max-port' are provided
+    if ($maxPort && $maxPort < $port) {
         throw new Exception("!!! 'php codeholic serve': The value '--max-port=$maxPort' must not be less than '--port=$port' !!!");
     }
 
