@@ -66,7 +66,7 @@ function serveTheApp(array $argsArray)
     $pathToMainIndex    =   'public/';      // Path to the entry point of our app
     $host               =   '127.0.0.1';    // Default 'host' url for our app
     $port               =   8080;           // Default port for our app to use
-    $maxPort            =   null;           // Decide max port to try running PHP's built-in server on before the failure 
+    $maxPort            =   null;           // Initial value of the '--max-port'          
 
     // Possible parameters for the 'php codeholic serve' command
     // For example, '--port=8080', '--host=127.0.0.1', '--max-port=9010'
@@ -99,20 +99,17 @@ function serveTheApp(array $argsArray)
         $port = $argsArray[$possibleParams['port']];
     }
 
-    // Validate that the port is an integer
-    validateInteger($port, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
-
     // If the user explicitly specifies max port limit
-    $maxPort = null;
     if (array_key_exists($possibleParams['maxPort'], $argsArray)) {
         $maxPort = $argsArray[$possibleParams['maxPort']];
     }
 
-    // Validate that the max port is an integer
-    $maxPort && validateInteger($maxPort, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
+    // Validate port & max port as integers
+    validateInteger($port, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
+    validateInteger($maxPort, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
 
     // If the maximum port is less than the the minimum port number, throw an exception
-    if ($maxPort && $maxPort < $port) {
+    if ($maxPort < $port) {
         throw new Exception("!!! 'php codeholic serve': The value '--max-port=$maxPort' must not be less than '--port=$port' !!!");
     }
 
@@ -127,26 +124,17 @@ function serveTheApp(array $argsArray)
         return;
     }
 
-    // If PHP version is less than 8.0.0, execute following code
-    $port++;  // Increment 'port number', as default port is not available for the use
-    $portLimit  =   $maxPort ?? $port + 60;  // To set the limit of iterations for the while loop below
-    $portIsFree =   false;
+    // To set the limit of iterations for the 'for loop' below
+    $portLimit = $maxPort ?? $port + 60;
 
-    // Run PHP's built-in server on a port that is available for use
-    while (!$portIsFree) {
-        // If the PHP's built-in server can be run on the current port, stop the loop
+    // If PHP version is less than 8.0.0, run PHP's built-in server on a port that is available for use
+    for (++$port; $port <= $portLimit; $port++) {
         if (exec(`php -S $host:$port -t $pathToMainIndex`)) {
-            $portIsFree = true;
-            break;
+            exit;
         }
-
-        // Limit the iterations of the loop. We don't want this loop to like run forever
-        if ($port > $portLimit) {
-            throw new Exception("!!! 'php codeholic serve': Failed to serve. Maybe, try a different '[--port] <=> [--max-port]' range !!!");
-        }
-
-        $port++;
     }
+
+    throw new Exception("!!! 'php codeholic serve': Failed to serve. Maybe, try a different '[--port] <=> [--max-port]' range !!!");
 }
 
 /**
