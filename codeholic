@@ -109,7 +109,7 @@ function serveTheApp(array $argsArray)
 
     // Validate '--max-port' only when its value is provided
     if ($maxPort) {
-        validateInteger((int) $maxPort, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
+        validateInteger((int) $maxPort, "!!! 'php codeholic serve': Invalid argument value [ --max-port=$maxPort ] !!!");
     }
 
     // Make sure '--max-port' is always greater than '--port'                  
