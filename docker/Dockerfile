@@ -18,7 +18,8 @@ RUN apt-get update && \
 # Install PHP Extensions
 RUN docker-php-ext-install zip pdo_mysql
 
-# RUN pecl install -o -f xdebug-3.1.3 \
+RUN pecl install -o -f xdebug-3.1.5 \
+    && docker-php-ext-enable xdebug
 #     && rm -rf /tmp/pear
 
 # Copy composer installable
