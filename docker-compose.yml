@@ -9,6 +9,9 @@ services:
     volumes:
       # Mount source-code for development
       - ./:/var/www
+    extra_hosts:
+      - host.docker.internal:host-gateway
+      
   db:
     image: mysql:8
     ports:
