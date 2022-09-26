@@ -131,6 +131,9 @@ function serveTheApp(array $argsArray)
     // Set the limit upto which to try to run PHP's built-in server on
     $maxPort = $maxPort ?? $port + 60;
 
+    // To make sure that an appropriate value gets printed for '$port' & not the incremented value in the below exception message
+    $minPort = $port;
+
     // Find out the port that is open for use in the given range
     for ($port; $port <= $maxPort; $port++) {
         if (executeCommand("php -S $host:$port -t $pathToMainIndex")) {
@@ -140,7 +143,7 @@ function serveTheApp(array $argsArray)
 
     // If no port was free within the given range, then throw an exception
     throw new Exception(
-        "!!! 'php codeholic serve': No port within the range [ $port <==> $maxPort ] is open. Maybe, try a different ports range"
+        "!!! 'php codeholic serve': No port within the range [ $minPort <==> $maxPort ] is open. Maybe, try a different ports range"
     );
 }
 
