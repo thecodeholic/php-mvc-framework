@@ -3,7 +3,7 @@
 try {
     // If no arguments were provided in the command line
     if (!isset($argv[1])) {
-        throw new Exception('!!! No command-line arguments were provided !!!');
+        throw new Exception('!!! No command(s) was/were provided !!!');
     }
 
     // Re-arrange the command-line arguments
@@ -18,7 +18,7 @@ try {
 
         // If an invalid command-line argument is provided
         default:
-            throw new Exception("!!! Invalid command line argument: [ $argv[1] ] !!!");
+            throw new Exception("!!! Invalid command : [ $argv[1] ] !!!");
             break;
     }
 } catch (\Exception $error) {
