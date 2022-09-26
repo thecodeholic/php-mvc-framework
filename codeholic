@@ -113,32 +113,46 @@ function serveTheApp(array $argsArray)
     }
 
     // Make sure '--max-port' is always greater than '--port'                  
-    if ($maxPort && $maxPort < $port) {
-        throw new Exception("!!! 'php codeholic serve': The value '--max-port=$maxPort' must not be less than '--port=$port' !!!");
+    if ($maxPort && $maxPort <= $port) {
+        throw new Exception("!!! 'php codeholic serve': The value '--max-port=$maxPort' must not be less than or equal to '--port=$port' !!!");
     }
 
-    // If default port is free, run PHP's built-in server on it
-    if (exec(`php -S $host:$port -t $pathToMainIndex`)) {
-        return;
-    }
-
+    // For better code readability
+    $selectPortDynamically = version_compare(phpversion(), '8.0.0') > -1 && !$port && !$maxPort;
+    
     // If PHP version is 8.0.0 or up, dynamically select a port to run PHP's built-in server on
-    if (version_compare(phpversion(), '8.0.0') > -1) {
-        exec(`php -S $host:0 -t $pathToMainIndex`);
+    if ($selectPortDynamically) {
+        executeCommand("php -S $host:0 -t $pathToMainIndex");
         return;
     }
 
-    // To set the limit of iterations for the 'for loop' below
-    $portLimit = $maxPort ?? $port + 60;
+    // Set the limit upto which to try to run PHP's built-in server on
+    $maxPort = $maxPort ?? $port + 60;
 
-    // If PHP version is less than 8.0.0, run PHP's built-in server on a port that is available for use
-    for (++$port; $port <= $portLimit; $port++) {
-        if (exec(`php -S $host:$port -t $pathToMainIndex`)) {
+    // Find out the port that is open for use in the given range
+    for ($port; $port <= $maxPort; $port++) {
+        if (executeCommand("php -S $host:$port -t $pathToMainIndex")) {
             exit;
         }
     }
 
-    throw new Exception("!!! 'php codeholic serve': Failed to serve. Maybe, try a different '[--port] <=> [--max-port]' range !!!");
+    // If no port was free within the given range, then throw an exception
+    throw new Exception(
+        "!!! 'php codeholic serve': No port within the range [ $port <==> $maxPort ] is open. Maybe, try a different ports range"
+    );
+}
+
+/**
+ * Execute the given PHP command without throwing an error
+ * 
+ * @param string $commandText
+ * 
+ * @return true|false
+ */
+function executeCommand(string $commandText)
+{
+    exec($commandText, $output, $return);
+    return $return === 0;
 }
 
 /**
@@ -150,8 +164,8 @@ function serveTheApp(array $argsArray)
  */
 function getPrettyError(string $message)
 {
-    $asterisks = '';
-    $asteriskLimit = strlen($message);
+    $asterisks      =   '';
+    $asteriskLimit  =   strlen($message);
 
     for ($i = 0; $i <= $asteriskLimit; $i++) {
         $asterisks .= '*';
@@ -161,7 +175,7 @@ function getPrettyError(string $message)
 }
 
 /**
- * Validate the the input is an integer
+ * Validate that the given input is an integer
  * 
  * @param mixed $input
  * @param string $exceptionMessage
