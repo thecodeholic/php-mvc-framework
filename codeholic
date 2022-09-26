@@ -118,7 +118,9 @@ function serveTheApp(array $argsArray)
     }
 
     // For better code readability
-    $selectPortDynamically = version_compare(phpversion(), '8.0.0') > -1 && !$port && !$maxPort;
+    $selectPortDynamically = version_compare(phpversion(), '8.0.0') > -1
+        && !array_key_exists($possibleParams['port'], $argsArray)
+        && !array_key_exists($possibleParams['maxPort'], $argsArray);
     
     // If PHP version is 8.0.0 or up, dynamically select a port to run PHP's built-in server on
     if ($selectPortDynamically) {
