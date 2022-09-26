@@ -3,7 +3,7 @@
 try {
     // If no arguments were provided in the command line
     if (!isset($argv[1])) {
-        throw new Exception('!!! No command(s) was/were provided !!!');
+        throw new Exception('!!! Zero commands: No command was provided !!!');
     }
 
     // Re-arrange the command-line arguments
