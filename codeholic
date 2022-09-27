@@ -79,13 +79,13 @@ function serveTheApp(array $argsArray)
     // If an invalid parameter is encountered, throw the exception
     foreach ($argsArray as $arg => $value) {
         if (!in_array($arg, $possibleParams)) {
-            throw new Exception("!!! 'php codeholic serve': Invalid parameter [ $arg ] !!!");
+            throw new Exception("!!! 'php codeholic serve': Invalid argument provided [ $arg ] !!!");
         }
 
         // If no value for parameter is passed, throw an exception
         // In future, this needs to be changed, if we introduce a new parameter that does not require a value
         if (!$value) {
-            throw new Exception("!!! 'php codeholic serve': Invalid value for the parameter [ $arg ] !!!");
+            throw new Exception("!!! 'php codeholic serve': Invalid value provided for the argument [ $arg ] !!!");
         }
     }
 
@@ -104,10 +104,10 @@ function serveTheApp(array $argsArray)
         $maxPort = $argsArray[$possibleParams['maxPort']];
     }
 
-    // Validate port & max port as integers
+    // Validate '$port' as an integer
     validateInteger($port, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
 
-    // Validate '--max-port' only when its value is provided
+    // Validate '$maxPort' as an integer only when its value is provided
     if ($maxPort) {
         validateInteger((int) $maxPort, "!!! 'php codeholic serve': Invalid argument value [ --max-port=$maxPort ] !!!");
     }
@@ -115,6 +115,11 @@ function serveTheApp(array $argsArray)
     // Make sure '--max-port' is always greater than '--port'                  
     if ($maxPort && $maxPort < $port) {
         throw new Exception("!!! 'php codeholic serve': The value '--max-port=$maxPort' must not be less than '--port=$port' !!!");
+    }
+
+    // Make sure value of '--max-port' is not too high, as we don't want the 'for loop' below to run like forever
+    if ($maxPort && $maxPort > ($maxPortLimit = $port + 100)) {
+        throw new Exception("!!! 'php codeholic serve': The value '--max-port=$maxPort' is too high. It must be lower than or equal to [ $port + 100 = $maxPortLimit ] !!!");
     }
 
     // For better code readability
@@ -128,13 +133,10 @@ function serveTheApp(array $argsArray)
         exit;
     }
 
-    // Set the limit upto which to try to run PHP's built-in server on
-    $maxPort = $maxPort ?? $port + 60;
+    $maxPort = $maxPort ?? $port + 60;  // Set the limit upto which to try to run PHP's built-in server on
+    $minPort = $port;  // Preserve original value '$port' so that it can be used in the below exception message
 
-    // To make sure that an appropriate value gets printed for '$port' & not the incremented value in the below exception message
-    $minPort = $port;
-
-    // Find out the port that is open for use in the given range
+    // Find out the port that is open & try running PHP's built-in server on it
     for ($port; $port <= $maxPort; $port++) {
         if (executeCommand("php -S $host:$port -t $pathToMainIndex")) {
             exit;
