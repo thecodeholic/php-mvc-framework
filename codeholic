@@ -113,8 +113,8 @@ function serveTheApp(array $argsArray)
     }
 
     // Make sure '--max-port' is always greater than '--port'                  
-    if ($maxPort && $maxPort <= $port) {
-        throw new Exception("!!! 'php codeholic serve': The value '--max-port=$maxPort' must not be less than or equal to '--port=$port' !!!");
+    if ($maxPort && $maxPort < $port) {
+        throw new Exception("!!! 'php codeholic serve': The value '--max-port=$maxPort' must not be less than '--port=$port' !!!");
     }
 
     // For better code readability
@@ -125,7 +125,7 @@ function serveTheApp(array $argsArray)
     // If PHP version is 8.0.0 or up, dynamically select a port to run PHP's built-in server on
     if ($selectPortDynamically) {
         executeCommand("php -S $host:0 -t $pathToMainIndex");
-        return;
+        exit;
     }
 
     // Set the limit upto which to try to run PHP's built-in server on
@@ -141,14 +141,21 @@ function serveTheApp(array $argsArray)
         }
     }
 
+    // Default exception message
+    $exceptionMessage = "!!! 'php codeholic serve': No port within the range [ $minPort <==> $maxPort ] is open. Maybe, try a different ports range !!!";
+
+    // If values of both '--port' & '--max-port' parameters are the same, change the exception message
+    if ($minPort === $maxPort) {
+        $exceptionMessage = "!!! 'php codeholic serve': The specified port [ $minPort ] is not open. Maybe, try a different port !!!";
+    }
+
     // If no port was free within the given range, then throw an exception
-    throw new Exception(
-        "!!! 'php codeholic serve': No port within the range [ $minPort <==> $maxPort ] is open. Maybe, try a different ports range"
-    );
+    throw new Exception($exceptionMessage);
 }
 
 /**
  * Execute the given PHP command without throwing an error
+ * If this function returns true, it means that the given command was successfully executed
  * 
  * @param string $commandText
  * 
