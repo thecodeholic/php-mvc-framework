@@ -105,7 +105,7 @@ function serveTheApp(array $argsArray)
     }
 
     // Validate '$port' as an integer
-    validateInteger($port, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
+    validateInteger((int) $port, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
 
     // Validate '$maxPort' as an integer only when its value is provided
     if ($maxPort) {
@@ -134,7 +134,7 @@ function serveTheApp(array $argsArray)
     }
 
     $maxPort = $maxPort ?? $port + 60;  // Set the limit upto which to try to run PHP's built-in server on
-    $minPort = $port;  // Preserve original value '$port' so that it can be used in the below exception message
+    $minPort = $port;  // Preserve original value of '$port' so that it can be used in the below exception message
 
     // Find out the port that is open & try running PHP's built-in server on it
     for ($port; $port <= $maxPort; $port++) {
