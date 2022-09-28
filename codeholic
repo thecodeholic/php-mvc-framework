@@ -155,7 +155,7 @@ function serveTheApp(array $argsArray)
 }
 
 /**
- * Execute the given PHP command without throwing an error
+ * Try executing the given PHP command without stopping the program execution
  * If this function returns true, it means that the given command was successfully executed
  * 
  * @param string $commandText
