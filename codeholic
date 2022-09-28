@@ -21,7 +21,7 @@ try {
             throw new Exception("!!! Invalid command : [ $argv[1] ] !!!");
             break;
     }
-} catch (\Exception $error) {
+} catch (Exception $error) {
     echo getPrettyError($error->getMessage());
     exit;
 }
@@ -36,9 +36,8 @@ try {
 function restructureArgsArray(array $args)
 {
     // Remove first two 'key => value' pairs from the array as they are not really neeeded
-    $args = array_slice($args, 2);
-
-    $newArgsArray = [];
+    $args           =   array_slice($args, 2);
+    $newArgsArray   =   [];
 
     // Convert each array element to a new 'key => value' pair
     // For example, '--port=8080' to '--port' => '8080'
@@ -70,7 +69,7 @@ function serveTheApp(array $argsArray)
 
     // Possible parameters for the 'php codeholic serve' command
     // For example, '--port=8080', '--host=127.0.0.1', '--max-port=9010'
-    $possibleParams = [
+    $validArgs = [
         'host'      =>  '--host',
         'port'      =>  '--port',
         'maxPort'   =>  '--max-port'
@@ -78,7 +77,7 @@ function serveTheApp(array $argsArray)
 
     // If an invalid parameter is encountered, throw the exception
     foreach ($argsArray as $arg => $value) {
-        if (!in_array($arg, $possibleParams)) {
+        if (!in_array($arg, $validArgs)) {
             throw new Exception("!!! 'php codeholic serve': Invalid argument provided [ $arg ] !!!");
         }
 
@@ -90,26 +89,26 @@ function serveTheApp(array $argsArray)
     }
 
     // If the user provides a custom host url
-    if (array_key_exists($possibleParams['host'], $argsArray)) {
-        $host = $argsArray[$possibleParams['host']];
+    if (array_key_exists($validArgs['host'], $argsArray)) {
+        $host = $argsArray[$validArgs['host']];
     }
 
     // If the user provides a custom port number
-    if (array_key_exists($possibleParams['port'], $argsArray)) {
-        $port = $argsArray[$possibleParams['port']];
+    if (array_key_exists($validArgs['port'], $argsArray)) {
+        $port = $argsArray[$validArgs['port']];
     }
 
     // If the user explicitly specifies max port limit
-    if (array_key_exists($possibleParams['maxPort'], $argsArray)) {
-        $maxPort = $argsArray[$possibleParams['maxPort']];
+    if (array_key_exists($validArgs['maxPort'], $argsArray)) {
+        $maxPort = $argsArray[$validArgs['maxPort']];
     }
 
     // Validate '$port' as an integer
-    validateInteger((int) $port, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
+    validateInteger($port, "!!! 'php codeholic serve': Invalid argument value [ --port=$port ] !!!");
 
     // Validate '$maxPort' as an integer only when its value is provided
     if ($maxPort) {
-        validateInteger((int) $maxPort, "!!! 'php codeholic serve': Invalid argument value [ --max-port=$maxPort ] !!!");
+        validateInteger($maxPort, "!!! 'php codeholic serve': Invalid argument value [ --max-port=$maxPort ] !!!");
     }
 
     // Make sure '--max-port' is always greater than '--port'                  
@@ -117,24 +116,24 @@ function serveTheApp(array $argsArray)
         throw new Exception("!!! 'php codeholic serve': The value '--max-port=$maxPort' must not be less than '--port=$port' !!!");
     }
 
-    // Make sure value of '--max-port' is not too high, as we don't want the 'for loop' below to run like forever
+    // Make sure that the value of '--max-port' is not too high, as we don't want the 'for loop' below to run like forever
     if ($maxPort && $maxPort > ($maxPortLimit = $port + 100)) {
         throw new Exception("!!! 'php codeholic serve': The value '--max-port=$maxPort' is too high. It must be lower than or equal to [ $port + 100 = $maxPortLimit ] !!!");
     }
 
     // For better code readability
-    $selectPortDynamically = version_compare(phpversion(), '8.0.0') > -1
-        && !array_key_exists($possibleParams['port'], $argsArray)
-        && !array_key_exists($possibleParams['maxPort'], $argsArray);
+    $portNumberCanBeDecidedDynamically = version_compare(phpversion(), '8.0.0') > -1
+        && !array_key_exists($validArgs['port'], $argsArray)
+        && !array_key_exists($validArgs['maxPort'], $argsArray);
     
     // If PHP version is 8.0.0 or up, dynamically select a port to run PHP's built-in server on
-    if ($selectPortDynamically) {
+    if ($portNumberCanBeDecidedDynamically) {
         executeCommand("php -S $host:0 -t $pathToMainIndex");
         exit;
     }
 
     $maxPort = $maxPort ?? $port + 60;  // Set the limit upto which to try to run PHP's built-in server on
-    $minPort = $port;  // Preserve original value of '$port' so that it can be used in the below exception message
+    $minPort = $port;                   // Preserve original value of '$port' so that it can be used in the below exception message
 
     // Find out the port that is open & try running PHP's built-in server on it
     for ($port; $port <= $maxPort; $port++) {
@@ -144,7 +143,7 @@ function serveTheApp(array $argsArray)
     }
 
     // Default exception message
-    $exceptionMessage = "!!! 'php codeholic serve': No port within the range [ $minPort <==> $maxPort ] is open. Maybe, try a different ports range !!!";
+    $exceptionMessage = "!!! 'php codeholic serve': No port within the range [ $minPort <=> $maxPort ] is open. Maybe, try a different ports range !!!";
 
     // If values of both '--port' & '--max-port' parameters are the same, change the exception message
     if ($minPort === $maxPort) {
