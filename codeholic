@@ -125,13 +125,13 @@ function serveTheApp(array $argsArray)
         throw new Exception($exceptionStart . $maxPortValidationMessage . $exceptionEnd);
     }
 
-    // For better code readability
+    // For better readability
     $dynamicPortSelectable = version_compare(phpversion(), '8.0.0') > -1 && !$customPortSpecified && !$customMaxPortSpecified;
     
     // If PHP version is 8.0.0 or up, dynamically select a port to run PHP's built-in server on
     if ($dynamicPortSelectable) {
         executeCommand("php -S $host:0 -t $pathToMainIndex");
-        exit;
+        return;
     }
 
     $maxPort = $maxPort ?? $port + 60;  // Set the limit upto which to try to run PHP's built-in server on
@@ -152,8 +152,8 @@ function serveTheApp(array $argsArray)
 
     // If values of both '--port' & '--max-port' parameters are the same, change the exception message
     if ($minPort === $maxPort) {
-        $portUnavailableMessage = "The specified port [ $minPort ] is not open. Maybe, try a different port";
-        $exceptionMessage = $exceptionStart . $portUnavailableMessage . $exceptionEnd;
+        $portUnavailableMessage =   "The specified port [ $minPort ] is not open. Maybe, try a different port";
+        $exceptionMessage       =   $exceptionStart . $portUnavailableMessage . $exceptionEnd;
     }
 
     // If no port was open, then throw the exception
