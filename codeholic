@@ -84,6 +84,10 @@ function serveTheApp(array $argsArray)
         if (!in_array($arg, $validArgs)) {
             throw new Exception($exceptionStart . "Invalid argument provided [ $arg ]" . $exceptionEnd);
         }
+
+        if (is_null($value)) {
+            throw new Exception($exceptionStart . "Invalid value provided for the argument [ $arg ]" . $exceptionEnd);
+        }
     }
 
     // Default statuses
@@ -93,7 +97,7 @@ function serveTheApp(array $argsArray)
 
     // Get 'host' name if the user provides it
     if ($customHostSpecified) {
-        $host = (string) $argsArray[$validArgs['host']];
+        $host = $argsArray[$validArgs['host']];
     }
 
     // Get 'port' number if the user provides it
@@ -104,6 +108,11 @@ function serveTheApp(array $argsArray)
     // Get 'max-port' number if the user provides it
     if ($customMaxPortSpecified) {
         $maxPort = (int) $argsArray[$validArgs['maxPort']];
+    }
+
+    // Make sure that the 'host' name is not an invalid string
+    if (empty($host)) {
+        throw new Exception($exceptionStart . "Invalid argument value [ --host=$host ]" . $exceptionEnd);
     }
 
     // Validate 'port' as an integer
@@ -135,7 +144,7 @@ function serveTheApp(array $argsArray)
     }
 
     $maxPort = $maxPort ?? $port + 60;  // Set the limit upto which to try to run PHP's built-in server on
-    $minPort = $port;                   // Preserve original value of '$port' so that it can be used in the below exception message
+    $minPort = $port;                   // Preserve original value of '$port' so that it can be used in the below exception message(s)
 
     // Find out the port that is open & try running PHP's built-in server on it
     for ($port; $port <= $maxPort; $port++) {
