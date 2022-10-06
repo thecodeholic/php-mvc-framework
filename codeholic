@@ -84,10 +84,6 @@ function serveTheApp(array $argsArray)
         if (!in_array($arg, $validArgs)) {
             throw new Exception($exceptionStart . "Invalid argument provided [ $arg ]" . $exceptionEnd);
         }
-
-        if (is_null($value)) {
-            throw new Exception($exceptionStart . "Invalid value provided for the argument [ $arg ]" . $exceptionEnd);
-        }
     }
 
     // Default statuses
