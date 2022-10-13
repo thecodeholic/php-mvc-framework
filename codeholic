@@ -40,7 +40,7 @@ function restructureArgsArray(array $args)
     $newArgsArray   =   [];
 
     // Convert each array element to a new 'key => value' pair
-    // For example, '--port=8080' to '--port' => '8080'
+    // For example, [ '--port=8080' ] to [ '--port' => '8080' ]
     foreach ($args as $arg) {
         if (strpos($arg, '=')) {
             $newArgsArray[strtok($arg, '=')] = strtok('');
@@ -106,7 +106,7 @@ function serveTheApp(array $argsArray)
         $maxPort = (int) $argsArray[$validArgs['maxPort']];
     }
 
-    // Make sure that the 'host' name is not an invalid string
+    // Make sure that the 'host' name is not an empty string or an invalid value
     if (empty($host)) {
         throw new Exception($exceptionStart . "Invalid argument value [ --host=$host ]" . $exceptionEnd);
     }
@@ -150,7 +150,7 @@ function serveTheApp(array $argsArray)
     }
 
     // For better readability
-    $portUnavailableMessage = "No port within the range [ $minPort <---> $maxPort ] is open. Maybe, try a different ports range";
+    $portUnavailableMessage = "No port within the range [ $minPort <==> $maxPort ] is open. Maybe, try a different ports range";
 
     // Default exception message
     $exceptionMessage = $exceptionStart . $portUnavailableMessage . $exceptionEnd;
@@ -171,7 +171,7 @@ function serveTheApp(array $argsArray)
  * 
  * @param string $commandText
  * 
- * @return true|false
+ * @return bool
  */
 function executeCommand(string $commandText)
 {
