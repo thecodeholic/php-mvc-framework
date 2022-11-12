@@ -11,12 +11,12 @@ try {
 
     // Compare command(s) & execute their corresponding code
     switch ($argv[1]) {
-        // For command 'php codeholic serve'
+            // For command 'php codeholic serve'
         case 'serve':
             serveTheApp($arguments);
             break;
 
-        // If an invalid command is provided
+            // If an invalid command is provided
         default:
             throw new Exception("!!! Invalid command : [ $argv[1] ] !!!");
             break;
@@ -29,13 +29,13 @@ try {
 /**
  * Re-arrange the user provided command line arguments
  * 
- * @param array $argv => Contains command-line arguments provided by the user
+ * @param   array   $argv           =>  Contains command-line arguments provided by the user
  * 
- * @return array $newArgsArray => Contains restructered command-line arguments
+ * @return  array   $newArgsArray   =>  Contains restructured command-line arguments
  */
 function restructureArgsArray(array $args)
 {
-    // Remove first two 'key => value' pairs from the array as they are not really neeeded
+    // Remove first two 'key => value' pairs from the array as they are not really needed
     $args           =   array_slice($args, 2);
     $newArgsArray   =   [];
 
@@ -56,65 +56,58 @@ function restructureArgsArray(array $args)
 /**
  * Serve the app using the command 'php codeholic serve'
  * 
- * @param array $argsArray => A restructered array containing command-line arguments
+ * @param   array   $argsArray  =>  A restructured array containing command-line arguments
  * 
- * @return null
+ * @return  null
  */
 function serveTheApp(array $argsArray)
 {
     $pathToMainIndex    =   'public/';      // Path to the entry point of our app
-    $host               =   '127.0.0.1';    // Default 'host' name for our app to use
-    $port               =   8080;           // Default 'port' number for our app to use
-    $maxPort            =   null;           // Default value of 'maxPort'
+    $host               =   '127.0.0.1';    // Default 'host' name to use
+    $port               =   8080;           // Default 'port' to use
+    $maxPort            =   null;
 
-    // Re-usable contents of the exception message
-    $exceptionStart =  "!!! 'php codeholic serve': ";
-    $exceptionEnd   =  " !!!";
+    $exceptionStart     =  "!!! 'php codeholic serve': ";
+    $exceptionEnd       =  " !!!";
 
-    // Possible parameters for the 'php codeholic serve' command
-    // For example, '--port=8080', '--host=127.0.0.1', '--max-port=9010'
+    // Valid parameters names for the command 'php codeholic serve'
     $validArgs = [
         'host'      =>  '--host',
         'port'      =>  '--port',
         'maxPort'   =>  '--max-port'
     ];
 
-    // If an invalid parameter is encountered, throw the exception
+    // Throw an exception for an invalid parameter name
     foreach ($argsArray as $arg => $value) {
         if (!in_array($arg, $validArgs)) {
             throw new Exception($exceptionStart . "Invalid argument provided [ $arg ]" . $exceptionEnd);
         }
     }
 
-    // Default statuses
     $customHostSpecified    =   array_key_exists($validArgs['host'], $argsArray);
     $customPortSpecified    =   array_key_exists($validArgs['port'], $argsArray);
     $customMaxPortSpecified =   array_key_exists($validArgs['maxPort'], $argsArray);
 
-    // Get 'host' name if the user provides it
     if ($customHostSpecified) {
         $host = $argsArray[$validArgs['host']];
     }
 
-    // Get 'port' number if the user provides it
     if ($customPortSpecified) {
-        $port = (int) $argsArray[$validArgs['port']];
+        $port = $argsArray[$validArgs['port']];
     }
 
-    // Get 'max-port' number if the user provides it
     if ($customMaxPortSpecified) {
-        $maxPort = (int) $argsArray[$validArgs['maxPort']];
+        $maxPort = $argsArray[$validArgs['maxPort']];
     }
 
-    // Make sure that the 'host' name is not an empty string or an invalid value
+    // 'host name' value must not be empty
     if (empty($host)) {
         throw new Exception($exceptionStart . "Invalid argument value [ --host=$host ]" . $exceptionEnd);
     }
 
-    // Validate 'port' as an integer
     validatePortNumber($port, $exceptionStart . "Invalid argument value [ --port=$port ]" . $exceptionEnd);
 
-    // Validate 'maxPort' as an integer only when its value is provided
+    // Validate 'maxPort' only when it is needed
     if ($maxPort) {
         validatePortNumber($maxPort, $exceptionStart . "Invalid argument value [ --max-port=$maxPort ]" . $exceptionEnd);
     }
@@ -132,55 +125,38 @@ function serveTheApp(array $argsArray)
 
     // For better readability
     $dynamicPortSelectable = version_compare(phpversion(), '8.0.0') > -1 && !$customPortSpecified && !$customMaxPortSpecified;
-    
+
     // If PHP version is 8.0.0 or up, dynamically select a port to run PHP's built-in server on
     if ($dynamicPortSelectable) {
         executeCommand("php -S $host:0 -t $pathToMainIndex");
         return;
     }
 
-    $maxPort = $maxPort ?? $port + 60;  // Set the limit upto which to try to run PHP's built-in server on
-    $minPort = $port;                   // Preserve original value of '$port' so that it can be used in the below exception message(s)
+    $maxPort    =   ($maxPort ?? $port + 60) + 1;    // Maximum port for running PHP's built-in server on
+    $minPort    =   $port;                           // Preserve original value of '$port' for further use
 
     // Find out the port that is open & try running PHP's built-in server on it
-    for ($port; $port <= $maxPort; $port++) {
+    for ($port; $port < $maxPort; $port++) {
         if (executeCommand("php -S $host:$port -t $pathToMainIndex")) {
             exit;
         }
     }
 
-    // For better readability
-    $portUnavailableMessage = "No port within the range [ $minPort <==> $maxPort ] is open. Maybe, try a different ports range";
+    $portUnavailableMessage =   "No port within the range [ $minPort <==> $maxPort ] is open. Maybe, try a different ports range";
+    $exceptionMessage       =   $exceptionStart . $portUnavailableMessage . $exceptionEnd;
 
-    // Default exception message
-    $exceptionMessage = $exceptionStart . $portUnavailableMessage . $exceptionEnd;
-
-    // If values of both '--port' & '--max-port' parameters are the same, change the exception message
+    // Set new exception message, when 'minPort' & 'maxPort' are the same
     if ($minPort === $maxPort) {
         $portUnavailableMessage =   "The specified port [ $minPort ] is not open. Maybe, try a different port";
         $exceptionMessage       =   $exceptionStart . $portUnavailableMessage . $exceptionEnd;
     }
 
-    // If no port was open, then throw the exception
+    // If no port was open, throw an exception
     throw new Exception($exceptionMessage);
 }
 
 /**
- * Try executing the given PHP command without stopping the program execution
- * If this function returns true, it means that the given command was successfully executed
- * 
- * @param string $commandText
- * 
- * @return bool
- */
-function executeCommand(string $commandText)
-{
-    exec($commandText, $output, $return);
-    return $return === 0;
-}
-
-/**
- * Get nicely formatted error message
+ * Get nicely formatted error message.
  * 
  * @param string $message
  * 
@@ -199,7 +175,23 @@ function getPrettyError(string $message)
 }
 
 /**
- * Validate that the given input is a valid port number
+ * Try executing the given PHP command without stopping the script execution.
+ * 
+ * If this function returns true, then it means that the given command was successfully
+ * executed. Otherwise, the given command failed to execute.
+ * 
+ * @param string $commandText
+ * 
+ * @return bool
+ */
+function executeCommand(string $commandText)
+{
+    exec($commandText, $output, $return);
+    return $return === 0;
+}
+
+/**
+ * Validate that the given input is a valid port number.
  * 
  * @param mixed $input
  * @param string $exceptionMessage
@@ -210,8 +202,15 @@ function getPrettyError(string $message)
  */
 function validatePortNumber(mixed $input, string $exceptionMessage = '')
 {
-    // The given input must be valid integer between the range '[ 0 - 65535 ]'
-    $inputIsValidPort = filter_var($input, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => 65535]]) || (int) $input === 0;
+    $portsRange = [
+        'options' => [
+            'min_range' => 0,
+            'max_range' => 65535
+        ]
+    ];
+
+    // The given input must be a valid integer between the range '[ 0 - 65535 ]'
+    $inputIsValidPort = filter_var($input, FILTER_VALIDATE_INT, $portsRange) || $input === 0;
 
     if ($inputIsValidPort) {
         return true;
